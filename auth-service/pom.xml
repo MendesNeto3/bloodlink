@@ -6,8 +6,8 @@
 
 	<parent>
 		<groupId>com.bloodlink</groupId>
-		<artifactId>bloodlink-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<artifactId>bloodlink</artifactId>
+		<version>1.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -77,6 +77,12 @@
 			<artifactId>jjwt-jackson</artifactId>
 		</dependency>
 
+		<!-- MapStruct: geração de mappers (ex: UserMapper) -->
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+		</dependency>
+
 		<!-- Testes -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -102,6 +108,36 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+
+			<!--
+                Lombok e MapStruct usam annotation processing. Sem essa configuração
+                explícita, o processor do MapStruct pode não "enxergar" os getters/setters
+                gerados pelo Lombok, e o UserMapper não compila corretamente.
+                A ordem importa: lombok -> lombok-mapstruct-binding -> mapstruct-processor.
+            -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok-mapstruct-binding</artifactId>
+							<version>0.2.0</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>
