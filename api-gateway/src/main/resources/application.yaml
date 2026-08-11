@@ -1,3 +1,57 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          # Rotas de exemplo — ajuste/preencha com os serviços reais conforme
+          # forem ficando prontos. Cada "id" vira um roteamento pro serviço
+          # correspondente (que está em outra porta, ex: auth-service:8081).
+          routes:
+            - id: auth-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/auth/**
+            - id: appointment-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/appointments/**
+            - id: blood-stock-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/blood-stock/**
+            - id: checkin-service
+              uri: http://localhost:8084
+              predicates:
+                - Path=/api/checkin/**
+            - id: donation-center-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/api/donation-centers/**
+            - id: eligibility-service
+              uri: http://localhost:8086
+              predicates:
+                - Path=/api/eligibility/**
+            - id: notification-service
+              uri: http://localhost:8087
+              predicates:
+                - Path=/api/notifications/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG

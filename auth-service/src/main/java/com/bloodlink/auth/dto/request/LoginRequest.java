@@ -1,4 +1,7 @@
 package com.bloodlink.auth.dto.request;
 
-public class LoginRequest {
+public record LoginRequest (
+        String email,
+        String password
+) {
 }

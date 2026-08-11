@@ -1,46 +1,17 @@
-Snippet de código
-# --- Compilação e Build (Maven) ---
+# Segredos / configuração local
+.env
+.env.*
+!.env.example
+
+# Build
 target/
+build/
 *.class
 
-# --- Maven Wrapper & Plugins ---
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-
-# --- Configurações de IDEs ---
-
-# IntelliJ IDEA
+# IDE
 .idea/
-*.iws
 *.iml
-*.ipr
-out/
-
-# Eclipse / Spring Tool Suite (STS)
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# Visual Studio Code
 .vscode/
 
-# --- Variáveis de Ambiente e Segredos ---
-.env
-*.env
-*.pem
-*.key
-
-# --- Arquivos de Sistema Operacional ---
+# OS
 .DS_Store
-Thumbs.db

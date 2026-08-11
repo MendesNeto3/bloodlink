@@ -1,4 +1,16 @@
 package com.bloodlink.auth.dto.response;
 
-public class UserResponse {
+import com.bloodlink.auth.domain.model.Enums.UserRole;
+
+import java.util.UUID;
+
+public record UserResponse (
+        UUID id,
+
+        String name,
+
+        String email,
+
+        UserRole role
+) {
 }

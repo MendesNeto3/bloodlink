@@ -1,4 +1,7 @@
 package com.bloodlink.auth.dto.response;
 
-public class TokenResponse {
+public record TokenResponse (
+        String accessToken,
+        String refreshToken
+) {
 }
