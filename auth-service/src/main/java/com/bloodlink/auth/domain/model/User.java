@@ -2,14 +2,14 @@ package com.bloodlink.auth.domain.model;
 
 import com.bloodlink.auth.domain.model.Enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Builder
+@NoArgsConstructor
 @Data
 @Table(schema = "public", name = "User")
 public class User {

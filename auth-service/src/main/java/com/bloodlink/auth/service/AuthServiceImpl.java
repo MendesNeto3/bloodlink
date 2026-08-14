@@ -13,11 +13,12 @@ import com.bloodlink.auth.dto.request.RegisterRequest;
 import com.bloodlink.auth.dto.response.TokenResponse;
 import com.bloodlink.auth.dto.response.UserResponse;
 import com.bloodlink.auth.messaging.UserEventPublisher;
+import com.bloodlink.auth.messaging.UserRegisteredEvent;
 import com.bloodlink.auth.repository.UserRepository;
 import com.bloodlink.auth.security.JwtTokenProvider;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
@@ -37,32 +38,36 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper mapper;
 
     @Override
+    @Transactional
     public UserResponse register(RegisterRequest request) {
-        return userRepository
-                .existsByEmail(request.email())
-                .map(user -> {
-                    user.setName(request.name());
-                    user.setEmail(request.email());
-                    user.setPasswordHash(request.password());
-                    user.setRole(UserRole.DOADOR);
+        if (userRepository.existsByEmail(request.email())) {
+            throw new EmailAlreadyExistsException("Email already exists: " + request.email());
+        }
 
-                    User savedUser = userRepository.save(user);
-                    userEventPublisher.publishUserRegistered(savedUser);
-                    return userRepository.save(user);
-                })
-                .map(mapper::toResponse)
-                .orElseThrow(() ->
-                        new EmailAlreadyExistsException("Email already exists!" + request.email()));
+        User user = new User();
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setRole(UserRole.DOADOR);
+
+        User savedUser = userRepository.save(user);
+
+        userEventPublisher.publishUserRegistered(
+                new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail())
+        );
+
+        return mapper.toResponse(savedUser);
     }
 
     @Override
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found!" + request.email()));
+                        new InvalidCredentialsException("User not found!" + request.email()));
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException("Invalid password!");
         }
+
         return generateToken(user);
     }
 
@@ -93,8 +98,8 @@ public class AuthServiceImpl implements AuthService {
 
     public TokenResponse generateToken(User user) {
         String tokenAcess = jwtTokenProvider.generateAccessToken(user.getId(), user.getRole());
-
         String tokenRefresh = UUID.randomUUID().toString();
+
         redisTemplate.opsForValue().set(
                 REFRESH_KEY_PREFIX + tokenAcess,
                 user.getId().toString(),
