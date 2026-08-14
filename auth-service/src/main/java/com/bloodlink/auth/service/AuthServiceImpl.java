@@ -58,7 +58,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found!" + request.email()));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found!" + request.email()));
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException("Invalid password!");
         }
@@ -74,7 +75,8 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("Refresh token invalid or expired");
         }
         User user = userRepository.findById(UUID.fromString(userIdValue))
-                .orElseThrow(() -> new InvalidTokenException("User not found!" + userIdValue));
+                .orElseThrow(() ->
+                        new InvalidTokenException("User not found!" + userIdValue));
 
         redisTemplate.delete(key);
 
@@ -84,7 +86,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse findById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found" + id));
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found" + id));
         return mapper.toResponse(user);
     }
 
