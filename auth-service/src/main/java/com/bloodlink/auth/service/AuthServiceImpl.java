@@ -49,7 +49,6 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRole(UserRole.DOADOR);
-
         User savedUser = userRepository.save(user);
 
         userEventPublisher.publishUserRegistered(

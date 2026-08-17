@@ -43,7 +43,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/find")
+    @GetMapping("/me")
     public ResponseEntity<UserResponse> findById (@AuthenticationPrincipal UUID id) {
         UserResponse response = authService.findById(id);
         return ResponseEntity.ok(response);
