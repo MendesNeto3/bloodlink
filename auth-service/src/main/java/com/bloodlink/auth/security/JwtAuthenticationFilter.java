@@ -35,17 +35,26 @@ public class  JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String token = extractToken(request);
+        System.out.println("=== TOKEN EXTRAIDO: " + token);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            authenticate(token);
+        if (token != null) {
+            boolean valido = jwtTokenProvider.validateToken(token);
+            System.out.println("=== TOKEN VALIDO? " + valido);
+            if (valido) {
+                authenticate(token);
+                System.out.println("=== AUTHENTICATION SETADA: " + SecurityContextHolder.getContext().getAuthentication());
+            }
+        } else {
+            System.out.println("=== TOKEN NULO - header nao veio ou nao tem Bearer");
         }
+
         filterChain.doFilter(request, response);
     }
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(AUTHORIZATION_HEADER);
         if (header != null && header.startsWith(BEARER_PREFIX)) {
-            return header.substring(BEARER_PREFIX.length());
+            return header.substring(BEARER_PREFIX.length()).trim();
         }
         return null;
     }
@@ -56,7 +65,8 @@ public class  JwtAuthenticationFilter extends OncePerRequestFilter {
 
         var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
-        var authentication = new UsernamePasswordAuthenticationToken(userId, authorities);
+        var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

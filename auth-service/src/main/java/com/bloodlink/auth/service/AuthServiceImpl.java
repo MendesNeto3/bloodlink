@@ -75,9 +75,10 @@ public class AuthServiceImpl implements AuthService {
         String key = REFRESH_KEY_PREFIX + request.refreshToken;
         String userIdValue = redisTemplate.opsForValue().get(key);
 
-        if (userIdValue == null) {
+        if (userIdValue == null || userIdValue.isEmpty()) {
             throw new InvalidTokenException("Refresh token invalid or expired");
         }
+
         User user = userRepository.findById(UUID.fromString(userIdValue))
                 .orElseThrow(() ->
                         new InvalidTokenException("User not found!" + userIdValue));
@@ -100,7 +101,7 @@ public class AuthServiceImpl implements AuthService {
         String tokenRefresh = UUID.randomUUID().toString();
 
         redisTemplate.opsForValue().set(
-                REFRESH_KEY_PREFIX + tokenAcess,
+                REFRESH_KEY_PREFIX + tokenRefresh,
                 user.getId().toString(),
                 REFRESH_TOKEN_TTL
         );

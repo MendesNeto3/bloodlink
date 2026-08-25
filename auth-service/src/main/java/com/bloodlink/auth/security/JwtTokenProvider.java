@@ -47,6 +47,7 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            System.out.println("=== ERRO AO VALIDAR TOKEN: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             return false;
         }
     }
