@@ -6,9 +6,9 @@ spring:
     name: eligibility-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bloodlink}
-    username: ${DB_USER:bloodlink}
-    password: ${DB_PASSWORD:bloodlink}
+    url: jdbc:postgresql://${ELIGIBILITY_DB_HOST:localhost}:${ELIGIBILITY_DB_PORT:5432}/${ELIGIBILITY_DB_NAME:eligibility_db}
+    username: ${ELIGIBILITY_DB_USER:eligibility}
+    password: ${ELIGIBILITY_DB_PASSWORD:eligibility}
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 2

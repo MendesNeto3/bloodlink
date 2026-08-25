@@ -1,17 +1,28 @@
-# Segredos / configuração local
+# Variáveis sensíveis
 .env
 .env.*
 !.env.example
 
-# Build
+# Maven
 target/
-build/
+**/target/
 *.class
 
 # IDE
 .idea/
 *.iml
 .vscode/
+.settings/
+.classpath
+.project
 
-# OS
+# Sistema operacional
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml

@@ -6,9 +6,9 @@ spring:
     name: donation-center-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bloodlink}
-    username: ${DB_USER:bloodlink}
-    password: ${DB_PASSWORD:bloodlink}
+    url: jdbc:postgresql://${CENTER_DB_HOST:localhost}:${CENTER_DB_PORT:5432}/${CENTER_DB_NAME:center_db}
+    username: ${CENTER_DB_USER:center}
+    password: ${CENTER_DB_PASSWORD:center}
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 2

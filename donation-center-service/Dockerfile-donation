@@ -1,0 +1,20 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+
+COPY pom.xml .
+COPY shared/pom.xml shared/
+COPY donation-center-service/pom.xml donation-center-service/
+
+RUN mvn -q -pl donation-center-service -am dependency:go-offline
+
+COPY shared shared
+COPY donation-center-service donation-center-service
+
+RUN mvn -q -pl donation-center-service -am clean package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /workspace/donation-center-service/target/*.jar app.jar
+
+EXPOSE 8082
+ENTRYPOINT ["java", "-jar", "app.jar"]

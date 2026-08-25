@@ -1,24 +1,267 @@
 version: "3.9"
 
 services:
-  postgres:
+  # ---------- Postgres por serviço ----------
+
+  postgres-auth:
     image: postgres:16-alpine
-    container_name: bloodlink-postgres
+    container_name: bloodlink-postgres-auth
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-bloodlink}
-      POSTGRES_USER: ${DB_USER:-bloodlink}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-bloodlink}
+      POSTGRES_DB: ${AUTH_DB_NAME:-auth_db}
+      POSTGRES_USER: ${AUTH_DB_USER:-auth}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-auth}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+      - postgres_auth_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-bloodlink} -d ${DB_NAME:-bloodlink}"]
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_DB_USER:-auth} -d ${AUTH_DB_NAME:-auth_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  postgres-center:
+    image: postgres:16-alpine
+    container_name: bloodlink-postgres-center
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CENTER_DB_NAME:-center_db}
+      POSTGRES_USER: ${CENTER_DB_USER:-center}
+      POSTGRES_PASSWORD: ${CENTER_DB_PASSWORD:-center}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_center_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CENTER_DB_USER:-center} -d ${CENTER_DB_NAME:-center_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-appointment:
+    image: postgres:16-alpine
+    container_name: bloodlink-postgres-appointment
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${APPOINTMENT_DB_NAME:-appointment_db}
+      POSTGRES_USER: ${APPOINTMENT_DB_USER:-appointment}
+      POSTGRES_PASSWORD: ${APPOINTMENT_DB_PASSWORD:-appointment}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_appointment_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${APPOINTMENT_DB_USER:-appointment} -d ${APPOINTMENT_DB_NAME:-appointment_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-eligibility:
+    image: postgres:16-alpine
+    container_name: bloodlink-postgres-eligibility
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${ELIGIBILITY_DB_NAME:-eligibility_db}
+      POSTGRES_USER: ${ELIGIBILITY_DB_USER:-eligibility}
+      POSTGRES_PASSWORD: ${ELIGIBILITY_DB_PASSWORD:-eligibility}
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_eligibility_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${ELIGIBILITY_DB_USER:-eligibility} -d ${ELIGIBILITY_DB_NAME:-eligibility_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-checkin:
+    image: postgres:16-alpine
+    container_name: bloodlink-postgres-checkin
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CHECKIN_DB_NAME:-checkin_db}
+      POSTGRES_USER: ${CHECKIN_DB_USER:-checkin}
+      POSTGRES_PASSWORD: ${CHECKIN_DB_PASSWORD:-checkin}
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_checkin_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CHECKIN_DB_USER:-checkin} -d ${CHECKIN_DB_NAME:-checkin_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-stock:
+    image: postgres:16-alpine
+    container_name: bloodlink-postgres-stock
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${STOCK_DB_NAME:-stock_db}
+      POSTGRES_USER: ${STOCK_DB_USER:-stock}
+      POSTGRES_PASSWORD: ${STOCK_DB_PASSWORD:-stock}
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_stock_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${STOCK_DB_USER:-stock} -d ${STOCK_DB_NAME:-stock_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------- Serviços de aplicação ----------
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    container_name: bloodlink-auth-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      AUTH_DB_HOST: postgres-auth
+      AUTH_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  donation-center-service:
+    build:
+      context: .
+      dockerfile: donation-center-service/Dockerfile
+    container_name: bloodlink-donation-center-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CENTER_DB_HOST: postgres-center
+      CENTER_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres-center:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  appointment-service:
+    build:
+      context: .
+      dockerfile: appointment-service/Dockerfile
+    container_name: bloodlink-appointment-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APPOINTMENT_DB_HOST: postgres-appointment
+      APPOINTMENT_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres-appointment:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  eligibility-service:
+    build:
+      context: .
+      dockerfile: eligibility-service/Dockerfile
+    container_name: bloodlink-eligibility-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      ELIGIBILITY_DB_HOST: postgres-eligibility
+      ELIGIBILITY_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres-eligibility:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  checkin-service:
+    build:
+      context: .
+      dockerfile: checkin-service/Dockerfile
+    container_name: bloodlink-checkin-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CHECKIN_DB_HOST: postgres-checkin
+      CHECKIN_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres-checkin:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  blood-stock-service:
+    build:
+      context: .
+      dockerfile: blood-stock-service/Dockerfile
+    container_name: bloodlink-blood-stock-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      STOCK_DB_HOST: postgres-stock
+      STOCK_DB_PORT: 5432
+      RABBITMQ_HOST: rabbitmq
+      REDIS_HOST: redis
+      SMTP_HOST: mailhog
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres-stock:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # notification-service e api-gateway não têm postgres associado.
+  # Adicione os blocos deles aqui quando o Dockerfile de cada um existir,
+  # sem depends_on de nenhum postgres-*.
+
+  # ---------- Infra compartilhada (sem dado de domínio) ----------
 
   redis:
     image: redis:7-alpine
@@ -28,7 +271,6 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    # Se REDIS_PASSWORD não estiver setada no .env, sobe sem senha (dev).
     command: >
       sh -c '
         if [ -n "$$REDIS_PASSWORD" ]; then
@@ -72,6 +314,11 @@ services:
       - "8025:8025"
 
 volumes:
-  postgres_data:
+  postgres_auth_data:
+  postgres_center_data:
+  postgres_appointment_data:
+  postgres_eligibility_data:
+  postgres_checkin_data:
+  postgres_stock_data:
   redis_data:
   rabbitmq_data:

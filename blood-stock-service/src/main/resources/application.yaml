@@ -6,9 +6,9 @@ spring:
     name: blood-stock-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bloodlink}
-    username: ${DB_USER:bloodlink}
-    password: ${DB_PASSWORD:bloodlink}
+    url: jdbc:postgresql://${STOCK_DB_HOST:localhost}:${STOCK_DB_PORT:5432}/${STOCK_DB_NAME:stock_db}
+    username: ${STOCK_DB_USER:stock}
+    password: ${STOCK_DB_PASSWORD:stock}
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 2

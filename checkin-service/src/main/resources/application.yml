@@ -6,9 +6,9 @@ spring:
     name: checkin-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bloodlink}
-    username: ${DB_USER:bloodlink}
-    password: ${DB_PASSWORD:bloodlink}
+    url: jdbc:postgresql://${CHECKIN_DB_HOST:localhost}:${CHECKIN_DB_PORT:5432}/${CHECKIN_DB_NAME:checkin_db}
+    username: ${CHECKIN_DB_USER:checkin}
+    password: ${CHECKIN_DB_PASSWORD:checkin}
     driver-class-name: org.postgresql.Driver
     hikari:
       minimum-idle: 2
