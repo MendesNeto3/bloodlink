@@ -1,0 +1,1 @@
+ALTER TABLE appointment RENAME COLUMN capacidadetotal TO capacidade_total;

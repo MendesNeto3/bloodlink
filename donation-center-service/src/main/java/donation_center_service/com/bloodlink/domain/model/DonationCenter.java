@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
-
 @Entity
 @Data
 @RequiredArgsConstructor
@@ -13,15 +12,15 @@ import java.util.UUID;
 public class DonationCenter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "nome",  nullable = false, length = 50)
+    @Column(name = "nome", nullable = false, length = 50)
     private String name;
 
     @Column(name = "adress", nullable = false, length = 50)
     private String adress;
 
-    @Column(name = "city",  nullable = false, length = 50)
+    @Column(name = "city", nullable = false, length = 50)
     private String city;
 }

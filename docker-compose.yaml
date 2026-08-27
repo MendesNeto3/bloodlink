@@ -140,7 +140,7 @@ services:
   donation-center-service:
     build:
       context: .
-      dockerfile: donation-center-service/Dockerfile
+      dockerfile: donation-center-service/Dockerfile-donation
     container_name: bloodlink-donation-center-service
     restart: unless-stopped
     env_file:
@@ -152,7 +152,7 @@ services:
       REDIS_HOST: redis
       SMTP_HOST: mailhog
     ports:
-      - "8082:8082"
+      - "8082:8085"
     depends_on:
       postgres-center:
         condition: service_healthy

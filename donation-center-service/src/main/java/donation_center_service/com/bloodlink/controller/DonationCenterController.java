@@ -1,5 +1,6 @@
 package donation_center_service.com.bloodlink.controller;
 
+import donation_center_service.com.bloodlink.domain.model.DonationCenter;
 import donation_center_service.com.bloodlink.dto.request.CreateCenterRequest;
 import donation_center_service.com.bloodlink.dto.response.CenterResponse;
 import donation_center_service.com.bloodlink.service.DonationCenterService;
