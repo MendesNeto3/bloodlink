@@ -1,10 +1,8 @@
 server:
-  port: 8085
-
+  port: 8082
 spring:
   application:
     name: donation-center-service
-
   datasource:
     url: jdbc:postgresql://${CENTER_DB_HOST:localhost}:${CENTER_DB_PORT:5432}/${CENTER_DB_NAME:center_db}
     username: ${CENTER_DB_USER:center}
@@ -14,7 +12,6 @@ spring:
       minimum-idle: 2
       maximum-pool-size: 10
       connection-timeout: 20000
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -24,12 +21,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     open-in-view: false
-
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
@@ -42,7 +37,6 @@ spring:
           initial-interval: 2000
           max-attempts: 5
           multiplier: 2
-
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -54,11 +48,9 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 2
-
 messaging:
   exchange:
     name: bloodlink.ents
-
 management:
   endpoints:
     web:
@@ -67,8 +59,8 @@ management:
   endpoint:
     health:
       show-details: when-authorized
-
 logging:
   level:
     root: INFO
     com.bloodlink: DEBUG
+    org.springframework.security: DEBUG
