@@ -22,7 +22,6 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -30,8 +29,12 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
+        log.info("Filtro executado para: {} {}", request.getMethod(), request.getRequestURI());
+
         String userIdHeader = request.getHeader(USER_ID_HEADER);
         String roleHeader = request.getHeader(USER_ROLE_HEADER);
+
+        log.info("Headers recebidos - X-User-Id: {}, X-User-Role: {}", userIdHeader, roleHeader);
 
         if (userIdHeader != null && roleHeader != null) {
             authenticate(userIdHeader, roleHeader);
@@ -47,9 +50,9 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
 
             var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            log.info("Usuário autenticado: {} com role: {}", userId, roleHeader);
         } catch (IllegalArgumentException e) {
-            // X-User-Id não é um UUID válido: não autentica, segue a requisição sem auth
-            // em vez de estourar 500. A cadeia de autorização vai barrar como não autenticado.
             log.warn("Header X-User-Id inválido recebido: {}", userIdHeader);
         }
     }

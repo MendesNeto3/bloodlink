@@ -152,7 +152,7 @@ services:
       REDIS_HOST: redis
       SMTP_HOST: mailhog
     ports:
-      - "8082:8082"
+      - "7072:7071"
     depends_on:
       postgres-center:
         condition: service_healthy

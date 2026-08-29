@@ -1,5 +1,6 @@
 package donation_center_service.com.bloodlink.service;
 
+import donation_center_service.com.bloodlink.domain.exception.CenterNotFoundException;
 import donation_center_service.com.bloodlink.domain.model.DonationCenter;
 import donation_center_service.com.bloodlink.dto.request.CreateCenterRequest;
 import donation_center_service.com.bloodlink.dto.response.CenterResponse;
@@ -10,6 +11,10 @@ import donation_center_service.com.bloodlink.repository.DonationCenterRepository
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,4 +49,22 @@ public class DonationCenterService implements DonationCenterServiceImpl {
 
         return mapper.toResponse(savedDonetion);
     }
+
+    @Override
+    public List<CenterResponse> listCenters() {
+      return  donationCenterRepository.findAll()
+              .stream()
+              .map(mapper::toResponse)
+              .toList();
+    }
+
+    @Override
+    public CenterResponse findById(UUID id) {
+        DonationCenter donationCenter = donationCenterRepository.findById(id)
+                .orElseThrow(()->
+                        new CenterNotFoundException("Center not found."));
+        return mapper.toResponse(donationCenter);
+    }
 }
+
+
