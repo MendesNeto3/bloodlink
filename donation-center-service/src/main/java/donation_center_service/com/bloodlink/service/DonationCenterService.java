@@ -2,6 +2,7 @@ package donation_center_service.com.bloodlink.service;
 
 import donation_center_service.com.bloodlink.domain.exception.CenterNotFoundException;
 import donation_center_service.com.bloodlink.domain.model.DonationCenter;
+import donation_center_service.com.bloodlink.dto.request.CenterSearchRequest;
 import donation_center_service.com.bloodlink.dto.request.CreateCenterRequest;
 import donation_center_service.com.bloodlink.dto.response.CenterResponse;
 import donation_center_service.com.bloodlink.mapper.CenterDonationMapper;
@@ -52,7 +53,8 @@ public class DonationCenterService implements DonationCenterServiceImpl {
 
     @Override
     public List<CenterResponse> listCenters() {
-      return  donationCenterRepository.findAll()
+      return  donationCenterRepository
+              .findAll()
               .stream()
               .map(mapper::toResponse)
               .toList();
@@ -61,9 +63,17 @@ public class DonationCenterService implements DonationCenterServiceImpl {
     @Override
     public CenterResponse findById(UUID id) {
         DonationCenter donationCenter = donationCenterRepository.findById(id)
-                .orElseThrow(()->
-                        new CenterNotFoundException("Center not found."));
+                .orElseThrow(()-> new CenterNotFoundException("Center not found."));
         return mapper.toResponse(donationCenter);
+    }
+
+    @Override
+    public List<CenterResponse> searchCenters(CenterSearchRequest request) {
+        return donationCenterRepository
+                .search(request.name(), request.city())
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }
 
