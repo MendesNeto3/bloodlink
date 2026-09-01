@@ -22,9 +22,9 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/centers").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/centers/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/centers/*/slots").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/centers", "/centers/**").permitAll()
+                        .requestMatchers("/error").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/centers/**")
                         .hasRole("ADMIN_HEMOCENTRO")

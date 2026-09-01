@@ -11,13 +11,16 @@ import donation_center_service.com.bloodlink.messaging.publisher.CenterDonationP
 import donation_center_service.com.bloodlink.repository.DonationCenterRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
-
 @Service
+@EnableCaching
 @RequiredArgsConstructor
 public class DonationCenterService implements DonationCenterServiceImpl {
 
@@ -26,9 +29,10 @@ public class DonationCenterService implements DonationCenterServiceImpl {
     private final CenterDonationMapper mapper;
 
     @Override
+    @CacheEvict(value = "centers", allEntries = true)
     @Transactional
     public CenterResponse createDonationCenter(CreateCenterRequest request) {
-        if (request == null ) {
+        if (request == null) {
             throw new IllegalArgumentException("request is null");
         }
 
@@ -37,21 +41,22 @@ public class DonationCenterService implements DonationCenterServiceImpl {
         donationCenter.setCity(request.city());
         donationCenter.setAdress(request.address());
 
-        DonationCenter savedDonetion = donationCenterRepository.save(donationCenter);
+        DonationCenter savedDonation = donationCenterRepository.save(donationCenter);
 
         DonationCenterCreatedEvent event = new DonationCenterCreatedEvent(
-                savedDonetion.getId(),
-                savedDonetion.getName(),
-                savedDonetion.getCity(),
-                savedDonetion.getAdress()
+                savedDonation.getId(),
+                savedDonation.getName(),
+                savedDonation.getCity(),
+                savedDonation.getAdress()
         );
 
         publisher.publishDonationCreate(event);
 
-        return mapper.toResponse(savedDonetion);
+        return mapper.toResponse(savedDonation);
     }
 
     @Override
+    @Cacheable(value = "centers")
     public List<CenterResponse> listCenters() {
       return  donationCenterRepository
               .findAll()
@@ -61,6 +66,7 @@ public class DonationCenterService implements DonationCenterServiceImpl {
     }
 
     @Override
+    @Cacheable(value = "center", key = "#id")
     public CenterResponse findById(UUID id) {
         DonationCenter donationCenter = donationCenterRepository.findById(id)
                 .orElseThrow(()-> new CenterNotFoundException("Center not found."));

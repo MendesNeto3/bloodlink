@@ -30,8 +30,8 @@ public class DonationCenterController {
         return ResponseEntity.ok(service.listCenters());
     }
 
-    @GetMapping()
-    public ResponseEntity<CenterResponse> getDonationCenter(@PathVariable UUID id){
+    @GetMapping("/{id}")
+    public ResponseEntity<CenterResponse> getDonationCenter(@PathVariable("id") UUID id){
         return ResponseEntity.ok(service.findById(id));
     }
 

@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .toList();
 
-        ErrorResponse body = new  ErrorResponse(
+        ErrorResponse body = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Invalid data in the request", details
@@ -43,6 +43,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        ex.printStackTrace(); // TEMPORÁRIO — só pra diagnóstico, remover depois
+
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
@@ -50,5 +52,18 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<ErrorResponse> handleThrowable(Throwable ex) {
+        ex.printStackTrace(); // TEMPORÁRIO — pega Error, que Exception.class não cobre
+
+        ErrorResponse body = new ErrorResponse(
+                500,
+                "Internal Server Error",
+                "Throwable: " + ex.getClass().getName() + " - " + ex.getMessage()
+        );
+
+        return ResponseEntity.status(500).body(body);
     }
 }

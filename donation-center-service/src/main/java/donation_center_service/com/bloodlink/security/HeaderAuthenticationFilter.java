@@ -22,6 +22,7 @@ public class HeaderAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String USER_ROLE_HEADER = "X-User-Role";
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

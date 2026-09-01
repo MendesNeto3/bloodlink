@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface DonationCenterRepository extends JpaRepository<DonationCenter, UUID> {
-    List<DonationCenter> findByIdAndDate(UUID centerId, LocalDate date);
 
     @Query("""
         SELECT c FROM DonationCenter c
