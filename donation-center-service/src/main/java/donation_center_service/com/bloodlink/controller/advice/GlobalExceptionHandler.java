@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        ex.printStackTrace(); // TEMPORÁRIO — só pra diagnóstico, remover depois
+        ex.printStackTrace();
 
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ErrorResponse> handleThrowable(Throwable ex) {
-        ex.printStackTrace(); // TEMPORÁRIO — pega Error, que Exception.class não cobre
+        ex.printStackTrace();
 
         ErrorResponse body = new ErrorResponse(
                 500,

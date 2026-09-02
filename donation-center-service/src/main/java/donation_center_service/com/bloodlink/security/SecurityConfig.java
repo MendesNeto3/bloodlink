@@ -29,6 +29,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/centers/**")
                         .hasRole("ADMIN_HEMOCENTRO")
 
+                        .requestMatchers(HttpMethod.POST, "/slots/**")
+                        .hasRole("ADMIN_HEMOCENTRO")
+
                         .requestMatchers(HttpMethod.GET,
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"

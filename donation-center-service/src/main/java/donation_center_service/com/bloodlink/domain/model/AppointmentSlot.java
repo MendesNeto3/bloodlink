@@ -19,7 +19,7 @@ public class AppointmentSlot {
     private UUID id;
 
     @Column(name = "center_id")
-    private String centerId;
+    private UUID centerId;
 
     @Column(name = "date_hour", nullable = false)
     private LocalDate dateHour;

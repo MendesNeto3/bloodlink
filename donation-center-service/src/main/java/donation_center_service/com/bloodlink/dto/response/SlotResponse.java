@@ -10,6 +10,6 @@ public record SlotResponse(
         String centerId,
         LocalDate date,
         LocalTime hour,
-        String capacityTotal
+        Integer capacityTotal
 ) {
 }

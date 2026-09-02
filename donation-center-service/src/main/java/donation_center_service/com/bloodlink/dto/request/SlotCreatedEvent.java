@@ -12,7 +12,4 @@ public record SlotCreatedEvent(
         LocalTime time
 ) {
 
-    public SlotCreatedEvent(String capacityTotal, LocalDate date, LocalTime time) {
-        this(null, null, capacityTotal, date, time);
-    }
 }
